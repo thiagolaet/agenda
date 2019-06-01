@@ -12,11 +12,11 @@ import javax.swing.event.*;
  *
  * @author thiag
  */
-public class Principal extends javax.swing.JFrame {
+public class Agenda extends javax.swing.JFrame {
     
     List<Contato> contatos = new ArrayList<>();
     
-    public Principal() {
+    public Agenda() {
         initComponents();
     }
 
@@ -123,24 +123,24 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 31, Short.MAX_VALUE)
                         .addComponent(botaoAdicionar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(botaoRemover)
                         .addGap(3, 3, 3)
                         .addComponent(botaoAtualizar))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-                            .addComponent(textoNome)
-                            .addComponent(textoTelefone))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(textoTelefone, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(textoNome, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -166,7 +166,7 @@ public class Principal extends javax.swing.JFrame {
                     .addComponent(botaoRemover)
                     .addComponent(botaoAtualizar))
                 .addContainerGap())
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -184,22 +184,38 @@ public class Principal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     DefaultListModel lista = new DefaultListModel();
+    
+    //Função para checar se todos os campos de dados foram preenchidos
+    public boolean checarVazio(String nome, String telefone, String detalhes){
+        if(nome.isEmpty() || telefone.isEmpty() || detalhes.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+    
+    //Função para checar se já existe um contato na lista com o nome escrito
+    public boolean checarRepeticao(String nome){
+        for(int i = 0; i < this.contatos.size(); i++){
+            if(this.contatos.get(i).nome.equals(nome)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private void botaoAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoAdicionarActionPerformed
+        
         String nome = textoNome.getText();
         String telefone = textoTelefone.getText();
         String detalhes = textoDetalhes.getText();
-        if(nome.isEmpty() || telefone.isEmpty() || detalhes.isEmpty()) {
+        
+        if(this.checarVazio(nome, telefone, detalhes)) {
             JOptionPane.showMessageDialog(rootPane, "Por favor, preencha todos os campos");
         }
-        boolean valido = true;
-        for(int i = 0; i < this.contatos.size(); i++){
-            if(this.contatos.get(i).nome.equals(nome)) {
-                JOptionPane.showMessageDialog(rootPane, "Já existe um contato com esse nome, por favor, exclua-o ou coloque outro nome");
-                valido = false;
-                break;
-            }
+        else if(this.checarRepeticao(nome)){
+            JOptionPane.showMessageDialog(rootPane, "Já existe um contato com esse nome, por favor, exclua-o ou coloque outro nome");
         }
-        if(valido){
+        else{
             Contato pessoa = new Contato();
             pessoa.contato(nome, telefone, detalhes);
             this.contatos.add(pessoa);
@@ -207,7 +223,6 @@ public class Principal extends javax.swing.JFrame {
             listaContatos.setModel(lista);
             System.out.println(this.contatos);
         }
-       
     }//GEN-LAST:event_botaoAdicionarActionPerformed
 
     private void botaoRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoRemoverActionPerformed
@@ -242,23 +257,17 @@ public class Principal extends javax.swing.JFrame {
         String novoNome = textoNome.getText();
         String novoTelefone = textoTelefone.getText();
         String novoDetalhes = textoDetalhes.getText();
+        String nome = lista.getElementAt(listaContatos.getSelectedIndex()).toString();
+
         
-        boolean valido;
-        valido = true;
-        for(int i = 0; i < this.contatos.size(); i++){
-            if(this.contatos.get(i).nome.equals(novoNome)) {
-                JOptionPane.showMessageDialog(rootPane, "Já existe um contato com esse nome, por favor, exclua-o ou coloque outro nome");
-                valido = false;
-                break;
-            }
-        }
-        
-        if(novoNome.isEmpty() || novoTelefone.isEmpty() || novoDetalhes.isEmpty()) {
+        if(this.checarVazio(novoNome, novoTelefone, novoDetalhes)) {
             JOptionPane.showMessageDialog(rootPane, "Por favor, preencha todos os campos");
         }
-        else if(valido){
+        else if(this.checarRepeticao(novoNome) && !(nome.equals(novoNome))){
+            JOptionPane.showMessageDialog(rootPane, "Já existe um contato com esse nome, por favor, exclua-o ou coloque outro nome");
+        }
+        else{
             try{
-            String nome = lista.getElementAt(listaContatos.getSelectedIndex()).toString();
             for(int i = 0; i < this.contatos.size(); i++){
                 if(this.contatos.get(i).nome.equals(nome)){
                    this.contatos.get(i).nome = novoNome;
@@ -272,9 +281,8 @@ public class Principal extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(rootPane, "Nenhum item selecionado");
             }
         }
-        
     }//GEN-LAST:event_botaoAtualizarActionPerformed
-
+        
     /**
      * @param args the command line arguments
      */
@@ -292,20 +300,21 @@ public class Principal extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Agenda.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Agenda.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Agenda.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Principal.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Agenda.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Principal().setVisible(true);
+                new Agenda().setVisible(true);
             }
         });
     }

@@ -5,6 +5,10 @@
  */
 package agenda;
 
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
+
 /**
  *
  * @author thiag
